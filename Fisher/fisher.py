@@ -38,12 +38,12 @@ def getLineOffset(dataset, w):
     for i in roots:
         if i < max(m1, m2) and i > min(m1, m2):
             plt.scatter(i, 0, color="green")
-            plt.show()
+            # plt.show()
             return i
 
 
 if __name__ == "__main__":
-    DATA_PATH = "dataset_FLD.csv"
+    DATA_PATH = "./dataset_FLD.csv"
     dataset = pd.read_csv(
         DATA_PATH, header=None, names=["Feature1", "Feature2", "Feature3", "Class"]
     ).to_numpy()
@@ -51,8 +51,6 @@ if __name__ == "__main__":
     w = fisher(dataset)
     w = w / np.linalg.norm(w)
     offset = getLineOffset(dataset, w)
-    print(w)
-    print(offset)
     fig = plt.figure()
     ax = fig.add_subplot(111, projection="3d")
     ax.scatter(
