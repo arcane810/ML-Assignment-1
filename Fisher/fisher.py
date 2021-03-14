@@ -18,6 +18,12 @@ def fisher(dataset):
     return np.matmul(np.linalg.inv(Sw), M1 - M2)
 
 
+def normpdf(x, mu=0, sigma=1):
+    u = (x - mu) / abs(sigma)
+    y = np.exp(-u * u / 2) / (np.sqrt(2 * np.pi) * abs(sigma))
+    return y
+
+
 def getLineOffset(dataset, w):
     class0_data = dataset[dataset[:, -1] == 0, :-1]
     class1_data = dataset[dataset[:, -1] == 1, :-1]
@@ -26,7 +32,6 @@ def getLineOffset(dataset, w):
     fig = plt.figure()
     plt.scatter(class0_projection, np.zeros(class0_projection.shape), color="red")
     plt.scatter(class1_projection, np.zeros(class1_projection.shape), color="blue")
-
     m1 = class0_projection.mean()
     std1 = class0_projection.std()
     m2 = class1_projection.mean()
@@ -35,9 +40,13 @@ def getLineOffset(dataset, w):
     b = m2 / (std2 ** 2) - m1 / (std1 ** 2)
     c = m1 ** 2 / (2 * std1 ** 2) - m2 ** 2 / (2 * std2 ** 2) - np.log(std2 / std1)
     roots = np.roots([a, b, c])
+    norm_x = np.linspace(-2.5, 2.5, 1000)
+    plt.plot(norm_x, normpdf(norm_x, m1, std1), color="red")
+    plt.plot(norm_x, normpdf(norm_x, m2, std2), color="blue")
     for i in roots:
         if i < max(m1, m2) and i > min(m1, m2):
             plt.scatter(i, 0, color="green")
+            plt.plot([i, i], [-1, 3], color="green")
             # plt.show()
             return i
 
