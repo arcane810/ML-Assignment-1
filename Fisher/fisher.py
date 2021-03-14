@@ -59,7 +59,9 @@ if __name__ == "__main__":
 
     w = fisher(dataset)
     w = w / np.linalg.norm(w)
+    print(w)
     offset = getLineOffset(dataset, w)
+    print(offset)
     fig = plt.figure()
     ax = fig.add_subplot(111, projection="3d")
     ax.scatter(
@@ -77,4 +79,4 @@ if __name__ == "__main__":
     xx, yy = np.meshgrid(range(-10, 10), range(-10, 10))
     zz = (-w[0] * xx - w[1] * yy + offset) * 1.0 / w[2]
     ax.plot_surface(xx, yy, zz, color="green")
-    plt.show()
+    # plt.show()

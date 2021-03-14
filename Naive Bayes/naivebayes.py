@@ -266,6 +266,7 @@ def k_fold_testing(dataset_x, dataset_y, k):
     np.random.shuffle(dataset_x)
     np.random.seed(99)
     np.random.shuffle(dataset_y)
+    accuracy = []
     sum_a = 0
     for i in range(k):
         st = (len(dataset_x)) * i // k
@@ -278,9 +279,14 @@ def k_fold_testing(dataset_x, dataset_y, k):
         test_y = np.array(test_y)
         sz = len(test_x)
         match = ((predicted_y != test_y) * 1).sum()
-        sum_a += (sz - match) / sz * 100
-    return sum_a / k
+        accuracy.append((sz - match) / sz * 100)        
+    return accuracy
 
 
 dataset_x, dataset_y = preprocessing()
-print(k_fold_testing(dataset_x, dataset_y, 7))
+accuracies = k_fold_testing(dataset_x, dataset_y, 7)
+for i in range(len(accuracies)):
+    print("Test fold", i + 1, ":", "Accuracy =", "%.2f" % accuracies[i])
+accuracies = np.array(accuracies)
+print("Mean of accuracies = ", accuracies.mean())
+print("Std Dev. of accuracies = ", accuracies.std())

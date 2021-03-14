@@ -33,9 +33,9 @@ def perceptron(x_train, y_train, learning_rate=1, epochs=1000000):
         cost = misclassified.sum()
         if cost == 0:
             return weights, cost
-        # weights = weights + learning_rate * (x_train[misclassified,:] * (y_train[misclassified].reshape(x_train[misclassified,:].shape)))
-        for x, y in zip(x_train[misclassified, :], y_train[misclassified]):
-            weights = weights + learning_rate * (x * y)
+        weights = weights + learning_rate * (
+            x_train[misclassified, :][0] * y_train[misclassified][0]
+        )
     return weights, cost
 
 
@@ -70,7 +70,7 @@ def predict(x_test, y_test, weights):
 
 
 x_train, y_train, x_test, y_test = train_test_split(df, 0.70)
-weights, cost = perceptron(x_train, y_train, learning_rate=1, epochs=1e6)
+weights, cost = perceptron(x_train, y_train, learning_rate=1, epochs=1000000)
 print("Training Accuracy : ", (1 - cost / x_train.shape[0]) * 100)
 predict(x_test, y_test, weights)
 plot(x_train, y_train)
