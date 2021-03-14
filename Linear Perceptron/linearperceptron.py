@@ -21,7 +21,7 @@ def train_test_split(dataframe, split=0.70):
     return x_train, y_train, x_test, y_test
 
 
-def perceptron(x_train, y_train, learning_rate=1, epochs=1e6):
+def perceptron(x_train, y_train, learning_rate=1, epochs=1000000):
     np.random.seed(1)
     weights = np.random.rand(x_train.shape[1])
     cost = 0
