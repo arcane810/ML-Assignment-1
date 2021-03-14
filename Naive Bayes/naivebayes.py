@@ -206,11 +206,8 @@ def preprocessing():
                     if (not word.isnumeric() and word.lower() not in stopwords)
                 ]
             )
-            dataset_y.append(words[-1])
+            dataset_y.append(int(words[-1]))
     return dataset_x, dataset_y
-
-
-dataset_x, dataset_y = preprocessing()
 
 
 def get_probabilities(dataset_x, dataset_y, alpha=1):
@@ -226,7 +223,7 @@ def get_probabilities(dataset_x, dataset_y, alpha=1):
     p1sum = 0
     p2sum = 0
     for i in range(len(dataset_y)):
-        if dataset_y[i] == "1":
+        if dataset_y[i] == 1:
             p1sum += len(dataset_x[i])
             for word in dataset_x[i]:
                 pclass1[index[word]] += 1
@@ -235,11 +232,55 @@ def get_probabilities(dataset_x, dataset_y, alpha=1):
             for word in dataset_x[i]:
                 pclass2[index[word]] += 1
 
-    pwc1 = (pclass1+alpha)/(p1sum+alpha*len(vocab))
-    pwc2 = (pclass2+alpha)/(p2sum+alpha*len(vocab))
-    post_c1 = p1sum/(p1sum+p2sum)
-    post_c2 = p2sum/(p1sum+p2sum)
-    return pwc1, pwc2, p1sum, p2sum, index
+    pwc1 = np.log(pclass1 + alpha) - np.log(p1sum + alpha * len(vocab))
+    pwc2 = np.log(pclass2 + alpha) - np.log(p2sum + alpha * len(vocab))
+    post_c1 = np.log(p1sum) - np.log(p1sum + p2sum)
+    post_c2 = np.log(p2sum) - np.log(p1sum + p2sum)
+    return pwc1, pwc2, post_c1, post_c2, index
 
 
-naive_bayes(dataset_x, dataset_y)
+def predict(words, pwc1, pwc2, post_c1, post_c2, index):
+    c1p = post_c1
+    for word in words:
+        if word in index:
+            c1p += pwc1[index[word]]
+    c2p = post_c2
+    for word in words:
+        if word in index:
+            c2p += pwc2[index[word]]
+    if c1p > c2p:
+        return 1
+    return 0
+
+
+def naive_bayes(train_x, train_y, test_x, test_y, alpha=1):
+    pwc1, pwc2, post_c1, post_c2, index = get_probabilities(train_x, train_y, alpha)
+    predicted_y = []
+    for x in test_x:
+        predicted_y.append(predict(x, pwc1, pwc2, post_c1, post_c2, index))
+    return np.array(predicted_y)
+
+
+def k_fold_testing(dataset_x, dataset_y, k):
+    np.random.seed(99)
+    np.random.shuffle(dataset_x)
+    np.random.seed(99)
+    np.random.shuffle(dataset_y)
+    sum_a = 0
+    for i in range(k):
+        st = (len(dataset_x)) * i // k
+        ed = (len(dataset_x)) * (i + 1) // k
+        test_x = dataset_x[st:ed]
+        test_y = dataset_y[st:ed]
+        train_x = dataset_x[0:st] + dataset_x[ed : len(dataset_x)]
+        train_y = dataset_y[0:st] + dataset_y[ed : len(dataset_y)]
+        predicted_y = naive_bayes(train_x, train_y, test_x, test_y, 1)
+        test_y = np.array(test_y)
+        sz = len(test_x)
+        match = ((predicted_y != test_y) * 1).sum()
+        sum_a += (sz - match) / sz * 100
+    return sum_a / k
+
+
+dataset_x, dataset_y = preprocessing()
+print(k_fold_testing(dataset_x, dataset_y, 7))
