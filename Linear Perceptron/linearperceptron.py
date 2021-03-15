@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 # %matplotlib inline
 
-df = pd.read_csv("./dataset_LP_2.csv", header=None)
+df = pd.read_csv("./dataset_LP_1.csv", header=None)
 
 
 def train_test_split(dataframe, split=0.70):
@@ -71,6 +71,7 @@ def predict(x_test, y_test, weights):
 
 x_train, y_train, x_test, y_test = train_test_split(df, 0.70)
 weights, cost = perceptron(x_train, y_train, learning_rate=1, epochs=1000000)
+weights = weights / np.linalg.norm(weights)
 print(weights)
 print("Training Accuracy : ", (1 - cost / x_train.shape[0]) * 100)
 predict(x_test, y_test, weights)
