@@ -47,7 +47,7 @@ def getLineOffset(dataset, w):
         if i < max(m1, m2) and i > min(m1, m2):
             plt.scatter(i, 0, color="green")
             plt.plot([i, i], [-1, 3], color="green")
-            # plt.show()
+            plt.show()
             return i
 
 
@@ -79,4 +79,4 @@ if __name__ == "__main__":
     xx, yy = np.meshgrid(range(-10, 10), range(-10, 10))
     zz = (-w[0] * xx - w[1] * yy + offset) * 1.0 / w[2]
     ax.plot_surface(xx, yy, zz, color="green")
-    # plt.show()
+    plt.show()
